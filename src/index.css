@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/*
+  Dizajnové tokeny. Farby stavov polí (ok / review / missing) sa používajú
+  konzistentne v celej aplikácii — rovnaký význam všade.
+*/
+@theme {
+  --font-sans: "Public Sans Variable", system-ui, sans-serif;
+
+  --color-ink: #1d3a5f;        /* hlavná farba: úradná modrá */
+  --color-ink-soft: #2c5282;
+  --color-paper: #f4f6f8;      /* pozadie aplikácie */
+  --color-surface: #ffffff;
+  --color-line: #d5dbe3;
+  --color-text: #1a2330;
+  --color-muted: #5b6675;
+
+  --color-mark: #e8b84a;       /* „zvýrazňovač“ — aktívny stav, focus */
+  --color-ok: #2e7d4f;         /* hodnota nájdená s istotou */
+  --color-review: #a86a12;     /* treba skontrolovať */
+  --color-missing: #7d8794;    /* v doklade sa nenašlo */
+  --color-danger: #b42318;
+}
+
+html { background: var(--color-paper); color: var(--color-text); }
+body { font-family: var(--font-sans); font-feature-settings: "tnum" 1; }
+
+:focus-visible {
+  outline: 3px solid var(--color-mark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
