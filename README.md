@@ -31,7 +31,11 @@ src/
 │   ├── types.ts        dátový kontrakt s backendom (tagy, confidence, evidence…)
 │   ├── client.ts       volania API (mock alebo skutočný backend)
 │   └── mock.ts         falošné dáta pre vývoj
-├── features/upload/    úlohy #9 a #10 — nahratie dokladu a validácia
+├── features/
+│   ├── upload/         #9, #10 — nahratie dokladu a validácia
+│   ├── processing/     #11 — priebeh spracovania (polling stavu)
+│   └── review/         #12–15 — kontrola, úprava a potvrdenie údajov
+├── lib/                istota → stav poľa, formáty čísel/dátumov, kontrola IČO
 ├── pages/              ostatné obrazovky
 └── components/         spoločné komponenty (Layout…)
 ```
@@ -40,15 +44,20 @@ src/
 
 - [x] #9 Upload screen
 - [x] #10 Validácia na frontende (typ, veľkosť do 20 MB, prázdny súbor, jeden súbor naraz)
-- [ ] #11 Processing screen
-- [ ] #12 Result screen
-- [ ] #13 Editovateľné polia
-- [ ] #14 Zobrazenie chýbajúcich hodnôt
-- [ ] #15 Vizuálne označenie istoty
+- [x] #11 Processing screen
+- [x] #12 Result screen
+- [x] #13 Editovateľné polia
+- [x] #14 Zobrazenie chýbajúcich hodnôt
+- [x] #15 Vizuálne označenie istoty
 - [ ] #16 Napojenie na backend API
 - [ ] #17 Zoznam dokumentov
 - [ ] #18 Export JSON
 - [ ] #19 Export XLSX
+
+## Demo tipy (mock režim)
+
+- Ľubovoľný PDF/JPG prejde spracovaním a zobrazí ukážkovú faktúru s rôznou istotou polí.
+- Súbor, ktorého názov obsahuje `chyba` (napr. `sken_chyba.pdf`), skončí chybou rozpoznávania.
 
 ## Stack
 

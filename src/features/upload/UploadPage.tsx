@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError, uploadDocument } from '../../api/client'
+import { rememberPreview } from '../../lib/previewStore'
 import Dropzone from './Dropzone'
 import { formatFileSize, kindOf, validateFiles } from './validation'
 
@@ -29,6 +30,7 @@ export default function UploadPage() {
       const res = await uploadDocument(file, (progress) =>
         setState((s) => (s.step === 'uploading' ? { ...s, progress } : s)),
       )
+      rememberPreview(res.id, file)
       navigate(`/doklady/${res.id}/spracovanie`)
     } catch (e) {
       const error = e instanceof ApiError ? e.message : 'Nahrávanie zlyhalo. Skúste to znova.'

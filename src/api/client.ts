@@ -1,6 +1,6 @@
 import { API_BASE, USE_MOCK } from '../config'
 import * as mock from './mock'
-import type { DocumentSummary, ExtractionResult, UploadResponse } from './types'
+import type { ConfirmPayload, DocumentSummary, ExtractionResult, UploadResponse } from './types'
 
 export class ApiError extends Error {
   status: number
@@ -49,10 +49,13 @@ export function uploadDocument(file: File, onProgress?: (percent: number) => voi
   })
 }
 
-async function getJson<T>(path: string): Promise<T> {
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response
   try {
-    res = await fetch(`${API_BASE}${path}`, { headers: { Accept: 'application/json' } })
+    res = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...init?.headers },
+    })
   } catch {
     throw new ApiError(errorMessage(0, null), 0)
   }
@@ -61,11 +64,20 @@ async function getJson<T>(path: string): Promise<T> {
   return body as T
 }
 
-/** Zatiaľ len v mocku — backend endpoint treba doplniť. */
+// Nasledujúce endpointy backend zatiaľ nemá — sú to návrhy (pozri types.ts).
+
+/** Stav spracovania a (keď je hotová) výsledok extrakcie. */
 export function getDocument(id: string): Promise<ExtractionResult> {
-  return USE_MOCK ? mock.getDocument(id) : getJson(`/documents/${id}`)
+  return USE_MOCK ? mock.getDocument(id) : requestJson(`/documents/${id}`)
 }
 
 export function listDocuments(): Promise<DocumentSummary[]> {
-  return USE_MOCK ? mock.listDocuments() : getJson('/documents')
+  return USE_MOCK ? mock.listDocuments() : requestJson('/documents')
+}
+
+/** Odoslanie skontrolovaných a potvrdených údajov. */
+export function confirmDocument(id: string, payload: ConfirmPayload): Promise<DocumentSummary> {
+  return USE_MOCK
+    ? mock.confirmDocument(id, payload)
+    : requestJson(`/documents/${id}/confirm`, { method: 'POST', body: JSON.stringify(payload) })
 }

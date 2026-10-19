@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router'
 import Layout from './components/Layout'
 import UploadPage from './features/upload/UploadPage'
-import ProcessingPage from './pages/ProcessingPage'
-import ResultPage from './pages/ResultPage'
+import ProcessingPage from './features/processing/ProcessingPage'
+import ResultPage from './features/review/ResultPage'
 import DocumentsPage from './pages/DocumentsPage'
 import NotFoundPage from './pages/NotFoundPage'
 

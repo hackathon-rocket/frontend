@@ -21,8 +21,14 @@ export interface DocumentSummary {
   file_size: number
   document_type: string
   status: DocumentStatus
+  /** Aktuálny krok spracovania, kým status = processing (návrh). */
+  processing_stage?: ProcessingStage | null
+  /** Zrozumiteľný dôvod, ak status = failed. */
+  error_message?: string | null
   created_at: string
 }
+
+export type ProcessingStage = 'ocr' | 'extraction' | 'validation'
 
 export type FieldType = 'string' | 'number' | 'currency' | 'date' | 'ico' | 'dic' | 'iban'
 
@@ -60,4 +66,16 @@ export interface ExtractionResult {
   fields: ExtractedField[]
   tables: ExtractedTable[]
   warnings: string[]
+}
+
+/** Hodnota pripravená na zápis do formulára eGrant: tag → hodnota. */
+export type FieldValue = string | number | null
+
+/**
+ * Potvrdené údaje — POST /api/documents/{id}/confirm (návrh).
+ * Presne tento tvar by eGrant zapísal do formulára (rovnako ako keby ich vyplnil používateľ).
+ */
+export interface ConfirmPayload {
+  values: Record<string, FieldValue>
+  tables: Record<string, Record<string, FieldValue>[]>
 }
