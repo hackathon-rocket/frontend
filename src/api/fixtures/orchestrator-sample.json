@@ -1,0 +1,897 @@
+{
+  "document_id": "synthetic-clean-invoice",
+  "status": "completed",
+  "document_type": "invoice",
+  "mapping_status": "mapped",
+  "fields": [],
+  "tables": [
+    {
+      "tag": "rozpocet.zoznamuctovnychdokladov",
+      "label": "Zoznam učtovných dokladov",
+      "columns": [
+        {
+          "tag": "c_dokladu",
+          "label": "Číslo účtovného dokladu",
+          "type": "string"
+        },
+        {
+          "tag": "suma_doklad",
+          "label": "Suma na účt. doklade",
+          "type": "currency"
+        },
+        {
+          "tag": "datum",
+          "label": "Dátum dodania/ služieb",
+          "type": "date"
+        },
+        {
+          "tag": "datum_1",
+          "label": "Dátum úhrady",
+          "type": "date"
+        },
+        {
+          "tag": "nazov_vydavku",
+          "label": "Názov výdavku",
+          "type": "string"
+        },
+        {
+          "tag": "uhrada",
+          "label": "Spôsob úhrady",
+          "type": "string"
+        },
+        {
+          "tag": "typ",
+          "label": "Typ účt. dokladu",
+          "type": "string"
+        },
+        {
+          "tag": "suma_dotacia",
+          "label": "Suma z dotácie",
+          "type": "currency"
+        },
+        {
+          "tag": "druh",
+          "label": "Druh výdavku",
+          "type": "string"
+        },
+        {
+          "tag": "p_c",
+          "label": "Por. č.",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        {
+          "c_dokladu": {
+            "tag": "c_dokladu",
+            "label": "Číslo účtovného dokladu",
+            "type": "string",
+            "value": "FA-2026-001",
+            "decimal_value": null,
+            "confidence": 0.8,
+            "evidence": "FAKTÚRA č. FA-2026-001",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "suma_doklad": {
+            "tag": "suma_doklad",
+            "label": "Suma na účt. doklade",
+            "type": "currency",
+            "value": 1230.0,
+            "decimal_value": "1230.00",
+            "confidence": 0.8,
+            "evidence": "Suma spolu: 1 230,00 EUR",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "datum": {
+            "tag": "datum",
+            "label": "Dátum dodania/ služieb",
+            "type": "date",
+            "value": "2026-09-30",
+            "decimal_value": null,
+            "confidence": 0.8,
+            "evidence": "Dátum dodania: 30.09.2026",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "datum_1": {
+            "tag": "datum_1",
+            "label": "Dátum úhrady",
+            "type": "date",
+            "value": null,
+            "decimal_value": null,
+            "confidence": 0.0,
+            "evidence": null,
+            "page": null,
+            "status": "not_found",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "nazov_vydavku": {
+            "tag": "nazov_vydavku",
+            "label": "Názov výdavku",
+            "type": "string",
+            "value": "Tlač informačných materiálov",
+            "decimal_value": null,
+            "confidence": 0.8,
+            "evidence": "Predmet fakturácie: Tlač informačných materiálov",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "uhrada": {
+            "tag": "uhrada",
+            "label": "Spôsob úhrady",
+            "type": "string",
+            "value": "prevodom",
+            "decimal_value": null,
+            "confidence": 0.8,
+            "evidence": "Spôsob úhrady: prevodom",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "typ": {
+            "tag": "typ",
+            "label": "Typ účt. dokladu",
+            "type": "string",
+            "value": "FA",
+            "decimal_value": null,
+            "confidence": 0.8,
+            "evidence": "FAKTÚRA č. FA-2026-001",
+            "page": 3,
+            "status": "verified",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "suma_dotacia": {
+            "tag": "suma_dotacia",
+            "label": "Suma z dotácie",
+            "type": "currency",
+            "value": null,
+            "decimal_value": null,
+            "confidence": 0.0,
+            "evidence": null,
+            "page": null,
+            "status": "not_found",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "druh": {
+            "tag": "druh",
+            "label": "Druh výdavku",
+            "type": "string",
+            "value": null,
+            "decimal_value": null,
+            "confidence": 0.0,
+            "evidence": null,
+            "page": null,
+            "status": "not_found",
+            "validation_reasons": [],
+            "source_locator": null
+          },
+          "p_c": {
+            "tag": "p_c",
+            "label": "Por. č.",
+            "type": "number",
+            "value": null,
+            "decimal_value": null,
+            "confidence": 0.0,
+            "evidence": null,
+            "page": null,
+            "status": "not_found",
+            "validation_reasons": [],
+            "source_locator": null
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "dátum úhrady: údaj sa v dodanom obsahu nenašiel alebo nebol overený.",
+    "Výsledok je návrh. Pred použitím skontrolujte údaje a pôvodný dokument.",
+    "Povinné pole Dátum úhrady ostáva prázdne.",
+    "Názov výdavku je opis z dokladu; súlad so zmluvou musí posúdiť používateľ.",
+    "Pole Suma z dotácie musí doplniť alebo potvrdiť používateľ.",
+    "Pole Druh výdavku musí doplniť alebo potvrdiť používateľ.",
+    "Pole Por. č. musí doplniť alebo potvrdiť používateľ.",
+    "Pole Účtovný doklad musí doplniť alebo potvrdiť používateľ.",
+    "Pole Zakúpený tovar musí doplniť alebo potvrdiť používateľ."
+  ],
+  "requires_review": true,
+  "extracted_data": {
+    "document_type": "invoice",
+    "classification": {
+      "value": "invoice",
+      "status": "verified",
+      "evidence": {
+        "page": 3,
+        "quote": "FAKTÚRA č. FA-2026-001",
+        "locator": null
+      },
+      "confidence": 0.8,
+      "source_kind": "document",
+      "validation_reasons": [],
+      "currency": null
+    },
+    "fields": {
+      "invoice_number": {
+        "value": "FA-2026-001",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "FAKTÚRA č. FA-2026-001",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "receipt_number": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "contract_number": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "supplier_name": {
+        "value": "Ukážkový dodávateľ s.r.o.",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Dodávateľ: Ukážkový dodávateľ s.r.o.",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "supplier_ico": {
+        "value": "12345679",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "IČO dodávateľa: 12 345 679",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "supplier_dic": {
+        "value": "2021234567",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "DIČ dodávateľa: 2021234567",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "supplier_vat_id": {
+        "value": "SK2021234567",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "IČ DPH dodávateľa: SK2021234567",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "customer_name": {
+        "value": "Ukážkové združenie",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Odberateľ: Ukážkové združenie",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "customer_ico": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "customer_dic": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "customer_vat_id": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "issue_date": {
+        "value": "2026-10-01",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Dátum vystavenia: 01.10.2026",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "due_date": {
+        "value": "2026-10-15",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Dátum splatnosti: 15.10.2026",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "delivery_date": {
+        "value": "2026-09-30",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Dátum dodania: 30.09.2026",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "payment_date": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "total_net": {
+        "value": "1000.00",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Základ DPH: 1 000,00 EUR",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": {
+          "value": "EUR",
+          "status": "verified",
+          "evidence": [
+            {
+              "page": 3,
+              "quote": "Základ DPH: 1 000,00 EUR",
+              "locator": null
+            },
+            {
+              "page": 3,
+              "quote": "Mena: EUR",
+              "locator": null
+            }
+          ],
+          "reasons": []
+        }
+      },
+      "total_vat": {
+        "value": "230.00",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "DPH spolu: 230,00 EUR",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": {
+          "value": "EUR",
+          "status": "verified",
+          "evidence": [
+            {
+              "page": 3,
+              "quote": "DPH spolu: 230,00 EUR",
+              "locator": null
+            },
+            {
+              "page": 3,
+              "quote": "Mena: EUR",
+              "locator": null
+            }
+          ],
+          "reasons": []
+        }
+      },
+      "total_gross": {
+        "value": "1230.00",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Suma spolu: 1 230,00 EUR",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": {
+          "value": "EUR",
+          "status": "verified",
+          "evidence": [
+            {
+              "page": 3,
+              "quote": "Suma spolu: 1 230,00 EUR",
+              "locator": null
+            },
+            {
+              "page": 3,
+              "quote": "Mena: EUR",
+              "locator": null
+            }
+          ],
+          "reasons": []
+        }
+      },
+      "paid_amount": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "currency": {
+        "value": "EUR",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Mena: EUR",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "iban": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "payment_method": {
+        "value": "prevodom",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Spôsob úhrady: prevodom",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "expense_description": {
+        "value": "Tlač informačných materiálov",
+        "status": "verified",
+        "evidence": {
+          "page": 3,
+          "quote": "Predmet fakturácie: Tlač informačných materiálov",
+          "locator": null
+        },
+        "confidence": 0.8,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "contract_subject": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "contract_date": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "contract_amount": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "statement_period_start": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "statement_period_end": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "opening_balance": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      },
+      "closing_balance": {
+        "value": null,
+        "status": "not_found",
+        "evidence": null,
+        "confidence": 0.0,
+        "source_kind": "document",
+        "validation_reasons": [],
+        "currency": null
+      }
+    },
+    "line_items": [
+      {
+        "description": {
+          "value": "Letáky",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "quantity": {
+          "value": "100",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "unit": {
+          "value": "ks",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "unit_price": {
+          "value": "4.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "net": {
+          "value": "400.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "vat": {
+          "value": "92.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "gross": {
+          "value": "492.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        }
+      },
+      {
+        "description": {
+          "value": "Plagáty",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "quantity": {
+          "value": "100",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "unit": {
+          "value": "ks",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": null
+        },
+        "unit_price": {
+          "value": "6.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "net": {
+          "value": "600.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "vat": {
+          "value": "138.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        },
+        "gross": {
+          "value": "738.00",
+          "status": "verified",
+          "evidence": {
+            "page": 3,
+            "quote": "Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00",
+            "locator": null
+          },
+          "confidence": 0.8,
+          "source_kind": "document",
+          "validation_reasons": [],
+          "currency": {
+            "value": "EUR",
+            "status": "verified",
+            "evidence": [
+              {
+                "page": 3,
+                "quote": "Mena: EUR",
+                "locator": null
+              }
+            ],
+            "reasons": []
+          }
+        }
+      }
+    ],
+    "transactions": []
+  },
+  "meta": {
+    "schema_version": "1.0",
+    "provider": "mock",
+    "model": "mock",
+    "request_id": "aeb055da-e197-47e4-9529-a1661b79b5db",
+    "duration_ms": 74.2,
+    "mapping_id": "bbsk_11824_default",
+    "schema_source": "configured",
+    "mapping_version": "1.0",
+    "mapping_fingerprint": "sha256:ce4bdae723c8eb5e2f5222449fc5ccb47d1d8ac0968d8a57906ba8da3575f615",
+    "form_schema_fingerprint": "sha256:5c03f9d4fbd257bf066d21e1829573e08a778596cc6827444090b78e2e9c4cc3",
+    "authoritative_constraints_fingerprint": null
+  }
+}

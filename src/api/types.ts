@@ -25,12 +25,17 @@ export interface DocumentSummary {
   processing_stage?: ProcessingStage | null
   /** Zrozumiteľný dôvod, ak status = failed. */
   error_message?: string | null
+  /** Technický detail chyby zo servera (zobrazujeme len rozbalený). */
+  error_detail?: string | null
   created_at: string
 }
 
 export type ProcessingStage = 'ocr' | 'extraction' | 'validation'
 
 export type FieldType = 'string' | 'number' | 'currency' | 'date' | 'ico' | 'dic' | 'iban'
+
+/** Stav poľa podľa AI orchestrátora (deterministické kontroly na serveri). */
+export type ServerFieldStatus = 'verified' | 'needs_review' | 'not_found'
 
 /** Jedna extrahovaná hodnota naviazaná na tag formulára eGrant. */
 export interface ExtractedField {
@@ -44,6 +49,12 @@ export interface ExtractedField {
   /** presný úryvok z dokladu, z ktorého hodnota pochádza */
   evidence?: string | null
   page?: number | null
+  /** Stav určený serverom — má prednosť pred prahom istoty na frontende. */
+  status?: ServerFieldStatus
+  /** Presná hodnota sumy ako text („1230.00“) — pri sumách má prednosť pred value. */
+  decimal_value?: string | null
+  /** Kódy dôvodov, prečo pole treba skontrolovať (napr. arithmetic_conflict). */
+  validation_reasons?: string[]
 }
 
 export interface TableColumn {
@@ -66,6 +77,8 @@ export interface ExtractionResult {
   fields: ExtractedField[]
   tables: ExtractedTable[]
   warnings: string[]
+  /** Text rozpoznaný OCR (backend: extractions[].text). */
+  ocr_text?: string | null
 }
 
 /** Hodnota pripravená na zápis do formulára eGrant: tag → hodnota. */

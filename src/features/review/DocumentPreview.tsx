@@ -5,7 +5,7 @@ import { formatFileSize } from '../upload/validation'
 /** Náhľad dokladu vedľa formulára, aby sa hodnoty dali porovnať s originálom. */
 export default function DocumentPreview({ doc }: { doc: DocumentSummary }) {
   const preview = getPreview(doc.id)
-  const frame = 'w-full h-[60vh] lg:h-[calc(100vh-11rem)] rounded-md border border-line bg-surface'
+  const frame = 'card w-full h-[60vh] lg:h-[calc(100vh-14rem)] overflow-hidden'
 
   if (preview?.type === 'application/pdf') {
     return <iframe src={`${preview.url}#view=FitH`} title={`Náhľad: ${doc.original_filename}`} className={frame} />
@@ -18,8 +18,9 @@ export default function DocumentPreview({ doc }: { doc: DocumentSummary }) {
     )
   }
   return (
-    <div className={`${frame} flex flex-col items-center justify-center gap-2 p-6 text-center`}>
-      <p className="font-medium text-ink">{doc.original_filename}</p>
+    <div className="card flex flex-col items-center justify-center gap-2 px-6 py-10 text-center">
+      <span className="mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-tint text-xs font-bold text-primary" aria-hidden>{(doc.original_filename.split('.').pop() ?? '').toUpperCase().slice(0, 4)}</span>
+      <p className="font-semibold text-ink">{doc.original_filename}</p>
       <p className="text-sm text-muted">{formatFileSize(doc.file_size)}</p>
       <p className="mt-2 max-w-xs text-sm text-muted">
         {preview

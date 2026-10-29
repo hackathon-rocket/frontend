@@ -11,7 +11,10 @@ export interface SumRule {
   totalField: string
 }
 
-export const SUM_RULES: SumRule[] = [{ table: 'polozky', column: 'suma', totalField: 'suma_bez_dph' }]
+export const SUM_RULES: SumRule[] = [
+  { table: 'polozky', column: 'suma', totalField: 'suma_bez_dph' }, // ukážkový formulár faktúry
+  { table: 'polozky', column: 'net', totalField: 'total_net' }, // univerzálne údaje orchestrátora
+]
 
 export interface SumCheck {
   rule: SumRule
@@ -22,7 +25,9 @@ export interface SumCheck {
 }
 
 export function sumCheck(table: TableEntry, fields: FieldEntry[]): SumCheck | null {
-  const rule = SUM_RULES.find((r) => r.table === table.table.tag)
+  const rule = SUM_RULES.find(
+    (r) => r.table === table.table.tag && table.table.columns.some((c) => c.tag === r.column) && fields.some((f) => f.field.tag === r.totalField),
+  )
   if (!rule) return null
   const totalEntry = fields.find((f) => f.field.tag === rule.totalField)
   const sum = table.rows.reduce((acc, r) => {

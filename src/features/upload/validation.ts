@@ -12,20 +12,14 @@ interface FileKind {
   mimeTypes: string[]
 }
 
+// Zhodné so zoznamom v backende (DocumentController: mimes:pdf,png,jpg,jpeg,tif,tiff,bmp,webp).
 export const ACCEPTED_KINDS: FileKind[] = [
   { label: 'PDF', extensions: ['pdf'], mimeTypes: ['application/pdf'] },
   { label: 'JPG', extensions: ['jpg', 'jpeg'], mimeTypes: ['image/jpeg'] },
   { label: 'PNG', extensions: ['png'], mimeTypes: ['image/png'] },
-  {
-    label: 'XLSX',
-    extensions: ['xlsx'],
-    mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-  },
-  {
-    label: 'DOCX',
-    extensions: ['docx'],
-    mimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-  },
+  { label: 'TIFF', extensions: ['tif', 'tiff'], mimeTypes: ['image/tiff'] },
+  { label: 'WEBP', extensions: ['webp'], mimeTypes: ['image/webp'] },
+  { label: 'BMP', extensions: ['bmp'], mimeTypes: ['image/bmp', 'image/x-ms-bmp'] },
 ]
 
 /** Hodnota pre atribút accept na <input type="file">. */

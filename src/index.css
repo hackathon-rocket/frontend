@@ -1,32 +1,99 @@
 @import "tailwindcss";
 
 /*
-  Dizajnové tokeny. Farby stavov polí (ok / review / missing) sa používajú
-  konzistentne v celej aplikácii — rovnaký význam všade.
+  Dizajnové tokeny v duchu Erste / George (Slovenská sporiteľňa):
+  písmo Inter, tmavomodré nadpisy, značková modrá pre akcie, svetlé pozadie,
+  biele karty so zaoblením a jemným modrastým tieňom, tlačidlá v tvare „pilulky“.
+  Stavové farby polí (ok / review / missing / edited) majú všade rovnaký význam.
 */
 @theme {
-  --font-sans: "Public Sans Variable", system-ui, sans-serif;
+  --font-sans: "Inter Variable", Inter, system-ui, sans-serif;
 
-  --color-ink: #1d3a5f;        /* hlavná farba: úradná modrá */
-  --color-ink-soft: #2c5282;
-  --color-paper: #f4f6f8;      /* pozadie aplikácie */
+  --color-ink: #0b1f42;          /* nadpisy, dôležitý text */
+  --color-ink-soft: #135ee2;     /* odkazy pri hoveri */
+  --color-primary: #2870ed;      /* značková modrá: tlačidlá, navigácia, focus */
+  --color-primary-dark: #135ee2;
+  --color-primary-tint: #eaf1fd;
+  --color-paper: #f4f6fa;        /* pozadie aplikácie */
   --color-surface: #ffffff;
-  --color-line: #d5dbe3;
-  --color-text: #1a2330;
-  --color-muted: #5b6675;
+  --color-line: #e4eaf0;         /* oddeľovače */
+  --color-field: #a3b5c9;        /* okraje vstupných polí */
+  --color-text: #303030;
+  --color-muted: #506a97;
 
-  --color-mark: #e8b84a;       /* „zvýrazňovač“ — aktívny stav, focus */
-  --color-ok: #2e7d4f;         /* hodnota nájdená s istotou */
-  --color-review: #a86a12;     /* treba skontrolovať */
-  --color-missing: #7d8794;    /* v doklade sa nenašlo */
-  --color-danger: #b42318;
+  --color-mark: #f2a20c;         /* jantárová: hodnota na kontrolu (podklad) */
+  --color-ok: #028661;
+  --color-review: #a85a00;
+  --color-missing: #5c7999;
+  --color-danger: #d10a0a;
+
+  --shadow-card: 0 1px 1px rgba(11, 31, 66, 0.04), 0 2px 10px rgba(11, 31, 66, 0.08);
+  --shadow-raised: 0 2px 4px rgba(11, 31, 66, 0.06), 0 8px 24px rgba(11, 31, 66, 0.12);
+}
+
+/* Opakované stavebné prvky — rovnaké veci vyzerajú a fungujú rovnako. */
+@utility card {
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  border: 1.5px solid transparent;
+  transition: background-color 120ms, border-color 120ms, color 120ms;
+  cursor: pointer;
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+@utility btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  &:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+}
+
+@utility btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  &:hover:not(:disabled) { background-color: var(--color-primary-tint); }
+}
+
+@utility btn-ghost {
+  background-color: transparent;
+  color: var(--color-primary);
+  &:hover:not(:disabled) { background-color: var(--color-primary-tint); }
+}
+
+@utility btn-sm {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+@utility input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--color-field);
+  background-color: var(--color-surface);
+  padding: 0.625rem 0.875rem;
+  color: var(--color-text);
+  &::placeholder { color: var(--color-missing); }
 }
 
 html { background: var(--color-paper); color: var(--color-text); }
-body { font-family: var(--font-sans); font-feature-settings: "tnum" 1; }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+.tabular-nums { font-feature-settings: "tnum" 1; }
+h1, h2, h3 { color: var(--color-ink); letter-spacing: -0.01em; }
 
 :focus-visible {
-  outline: 3px solid var(--color-mark);
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 

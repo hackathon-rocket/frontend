@@ -1,4 +1,4 @@
-import { STATE_LABEL, percent, type FieldState } from '../../lib/confidence'
+import { STATE_LABEL, percent, reasonTexts, type FieldState } from '../../lib/confidence'
 import type { FieldEntry } from './useReviewState'
 
 /** Riadok pod poľom: stav (#15), zdroj hodnoty z dokladu, chybová hláška. */
@@ -9,16 +9,19 @@ export default function StateNote({ entry, onCheck, compact }: { entry: FieldEnt
       <span className={`inline-flex items-center gap-1.5 font-medium ${TEXT[state]}`}>
         <StateIcon state={state} />
         {STATE_LABEL[state]}
-        {state === 'review' && <span className="font-normal">(istota {percent(field.confidence)})</span>}
+        {state === 'review' && field.confidence > 0 && <span className="font-normal">(istota {percent(field.confidence)})</span>}
       </span>
       {!compact && field.evidence && (state === 'ok' || state === 'review' || state === 'checked') && (
         <span className="text-muted">
-          v doklade: <q className="text-text">{field.evidence}</q>
+          v doklade{field.page ? `, str. ${field.page}` : ''}: <q className="text-text">{field.evidence}</q>
         </span>
       )}
       {!compact && state === 'missing' && <span className="text-muted">Doplňte ručne, ak ho formulár vyžaduje.</span>}
+      {!compact && state === 'review' && reasonTexts(field.validation_reasons).map((t) => (
+        <span key={t} className="basis-full text-review">{t}</span>
+      ))}
       {state === 'review' && onCheck && (
-        <button type="button" onClick={onCheck} className="font-medium text-ink underline underline-offset-2 hover:text-ink-soft">
+        <button type="button" onClick={onCheck} className="font-semibold text-primary underline underline-offset-2 hover:text-primary-dark">
           Hodnota je správna
         </button>
       )}
@@ -36,7 +39,7 @@ const TEXT: Record<FieldState, string> = {
   checked: 'text-ok',
   review: 'text-review',
   missing: 'text-missing',
-  edited: 'text-ink',
+  edited: 'text-primary',
 }
 
 export function StateIcon({ state }: { state: FieldState }) {

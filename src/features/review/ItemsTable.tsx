@@ -18,14 +18,14 @@ export default function ItemsTable({ entry, check, readOnly, review }: Props) {
   return (
     <section aria-labelledby={`t-${table.tag}`}>
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id={`t-${table.tag}`} className="text-lg font-semibold text-ink">{table.label}</h2>
+        <h2 id={`t-${table.tag}`} className="text-xl font-bold">{table.label}</h2>
         <span className="text-xs text-muted" title="Tag tabuľky vo formulári eGrant">{table.tag}</span>
       </div>
 
-      <div className="relative mt-3 overflow-x-auto rounded-md border border-line bg-surface">
-        <table className="w-full min-w-[520px] border-collapse text-sm">
+      <div className="relative mt-4 overflow-x-auto rounded-lg border border-line">
+        <table className="w-full border-collapse text-sm" style={{ minWidth: minTableWidth(table.columns) }}>
           <thead>
-            <tr className="border-b border-line text-left text-muted">
+            <tr className="border-b border-line bg-paper text-left text-muted">
               <th scope="col" className="w-8 px-2 py-2 font-medium">#</th>
               {table.columns.map((c) => (
                 <th key={c.tag} scope="col" className={`px-2 py-2 font-medium ${COL_WIDTH[c.type] ?? ''} ${c.type === 'currency' || c.type === 'number' ? 'text-right' : ''}`}>
@@ -55,7 +55,7 @@ export default function ItemsTable({ entry, check, readOnly, review }: Props) {
                     <button
                       type="button"
                       onClick={() => review.removeRow(table.tag, row.id)}
-                      className="rounded p-2 text-muted hover:bg-danger/10 hover:text-danger"
+                      className="rounded-full p-2 text-muted hover:bg-danger/10 hover:text-danger"
                       aria-label={`Odstrániť riadok ${i + 1}`}
                       title="Odstrániť riadok"
                     >
@@ -78,7 +78,7 @@ export default function ItemsTable({ entry, check, readOnly, review }: Props) {
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
         {!readOnly ? (
-          <button type="button" onClick={() => review.addRow(table.tag)} className="rounded-md border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink hover:border-ink-soft">
+          <button type="button" onClick={() => review.addRow(table.tag)} className="btn btn-secondary btn-sm">
             + Pridať položku
           </button>
         ) : <span />}
@@ -89,7 +89,13 @@ export default function ItemsTable({ entry, check, readOnly, review }: Props) {
 }
 
 /** Šírky stĺpcov podľa typu — textu necháme najviac miesta. */
-const COL_WIDTH: Partial<Record<string, string>> = { number: 'w-24', currency: 'w-36', date: 'w-40', ico: 'w-32' }
+const COL_WIDTH: Partial<Record<string, string>> = { number: 'w-24', currency: 'w-32', date: 'w-40', ico: 'w-32' }
+const COL_PX: Partial<Record<string, number>> = { string: 200, number: 96, currency: 128, date: 160, ico: 128 }
+
+/** Tabuľka sa radšej posúva do strany, než aby orezávala hodnoty. */
+function minTableWidth(columns: { type: string }[]): number {
+  return 40 + 48 + columns.reduce((sum, c) => sum + (COL_PX[c.type] ?? 140), 0)
+}
 
 function Cell({ cell, label, readOnly, onChange, onCheck }: {
   cell: FieldEntry
@@ -101,9 +107,9 @@ function Cell({ cell, label, readOnly, onChange, onCheck }: {
   const numeric = cell.field.type === 'currency' || cell.field.type === 'number'
   const tone =
     cell.error ? 'border-danger bg-danger/5'
-    : cell.state === 'review' ? 'border-review/60 bg-mark/15'
-    : cell.state === 'missing' ? 'border-dashed border-missing bg-paper'
-    : cell.state === 'edited' ? 'border-ink/40'
+    : cell.state === 'review' ? 'border-mark bg-mark/10'
+    : cell.state === 'missing' ? 'border-dashed border-field'
+    : cell.state === 'edited' ? 'border-primary/50'
     : 'border-transparent hover:border-line focus:border-line'
   const hint =
     cell.error ??
@@ -112,7 +118,7 @@ function Cell({ cell, label, readOnly, onChange, onCheck }: {
       : cell.state === 'missing' || cell.state === 'edited' ? STATE_LABEL[cell.state] : undefined)
 
   return (
-    <div>
+    <div data-attention={cell.state === 'review' || !!cell.error || undefined}>
       <input
         value={cell.text}
         onChange={(e) => onChange(e.target.value)}
@@ -121,13 +127,13 @@ function Cell({ cell, label, readOnly, onChange, onCheck }: {
         aria-invalid={!!cell.error}
         title={hint}
         inputMode={numeric ? 'decimal' : undefined}
-        className={`w-full rounded border px-2 py-1.5 ${numeric ? 'text-right tabular-nums' : ''} ${tone}`}
+        className={`w-full rounded-md border px-2 py-1.5 ${numeric ? 'text-right tabular-nums' : ''} ${tone}`}
       />
       {cell.state === 'review' && !readOnly && (
         <div className="mt-1 flex items-center justify-end gap-2 text-xs text-review">
           <StateIcon state="review" />
           <span>{cell.field.evidence ? <>v doklade „{cell.field.evidence}“</> : `istota ${percent(cell.field.confidence)}`}</span>
-          <button type="button" onClick={onCheck} className="font-medium text-ink underline underline-offset-2">OK</button>
+          <button type="button" onClick={onCheck} className="font-semibold text-primary underline underline-offset-2">OK</button>
         </div>
       )}
       {cell.error && <p className="mt-1 text-xs text-danger">{cell.error}</p>}

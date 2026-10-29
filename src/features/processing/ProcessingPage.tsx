@@ -58,19 +58,19 @@ export default function ProcessingPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
+      <h1 className="text-[32px] sm:text-[40px] leading-tight font-bold">
         {failed ? 'Doklad sa nepodarilo spracovať' : 'Spracovávame doklad'}
       </h1>
       {doc && <p className="mt-3 text-muted truncate">{doc.original_filename}</p>}
 
-      <ol className="mt-8 rounded-lg border border-line bg-surface divide-y divide-line" aria-live="polite">
+      <ol className="card mt-8 divide-y divide-line" aria-live="polite">
         {STEPS.map((step, i) => {
           const state = failed && i === Math.max(activeIndex, 1) ? 'failed' : i < activeIndex ? 'done' : i === activeIndex ? 'active' : 'pending'
           return (
-            <li key={step.stage} className="flex gap-4 px-5 py-4" aria-current={state === 'active' ? 'step' : undefined}>
+ <li key={step.stage} className="flex gap-4 px-5 py-4 sm:px-6" aria-current={state === 'active' ? 'step' : undefined}>
               <StepMarker index={i + 1} state={state} />
               <div className={state === 'pending' ? 'text-muted' : ''}>
-                <p className="font-medium">{step.title}</p>
+                <p className={`font-semibold ${state === 'pending' ? 'text-muted' : 'text-ink'}`}>{step.title}</p>
                 {(state === 'active' || state === 'failed') && (
                   <p className={`mt-0.5 text-sm ${state === 'failed' ? 'text-danger' : 'text-muted'}`}>
                     {state === 'failed' ? doc?.error_message ?? 'Pri spracovaní nastala chyba.' : step.detail}
@@ -83,19 +83,28 @@ export default function ProcessingPage() {
       </ol>
 
       {networkError && !failed && (
-        <div role="alert" className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger">
+        <div role="alert" className="mt-4 rounded-lg border-l-4 border-danger bg-danger/5 px-4 py-3 text-sm text-danger">
           {networkError} Skúšame to znova.
         </div>
       )}
 
       {failed ? (
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link to="/" className="rounded-md bg-ink px-5 py-2.5 font-medium text-white hover:bg-ink-soft">
+          <Link to="/" className="btn btn-primary">
             Nahrať doklad znova
+          </Link>
+          <Link to="/doklady" className="btn btn-secondary">
+            Prejsť na doklady
           </Link>
           <p className="w-full text-sm text-muted">
             Pomôže ostrejšia fotografia pri dobrom svetle alebo sken s rozlíšením aspoň 200 DPI.
           </p>
+          {doc?.error_detail && (
+            <details className="w-full text-sm text-muted">
+              <summary className="cursor-pointer">Technický detail pre podporu</summary>
+              <p className="mt-1 break-words">{doc.error_detail}</p>
+            </details>
+          )}
         </div>
       ) : (
         <p className="mt-6 text-sm text-muted">
@@ -123,8 +132,8 @@ function StepMarker({ index, state }: { index: number; state: 'done' | 'active' 
   if (state === 'failed') return <span className={`${base} bg-danger text-white`} aria-label="Chyba">!</span>
   if (state === 'active')
     return (
-      <span className={`${base} relative border-2 border-mark text-ink`}>
-        <span className="absolute inset-[-4px] rounded-full border-2 border-transparent border-t-mark animate-spin" aria-hidden />
+      <span className={`${base} relative border-2 border-primary/30 text-primary`}>
+        <span className="absolute inset-[-4px] rounded-full border-2 border-transparent border-t-primary animate-spin" aria-hidden />
         {index}
       </span>
     )

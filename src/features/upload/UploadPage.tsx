@@ -43,8 +43,8 @@ export default function UploadPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Nahrajte doklad</h1>
-      <p className="mt-3 text-muted leading-relaxed max-w-prose">
+      <h1 className="text-[32px] sm:text-[40px] leading-tight font-bold">Nahrajte doklad</h1>
+      <p className="mt-3 text-lg text-muted leading-relaxed max-w-prose">
         Faktúru, bloček alebo výpis z účtu. Údaje z neho predvyplníme do formulára vyúčtovania a vy ich pred
         uložením skontrolujete. Nič sa neuloží bez vášho potvrdenia.
       </p>
@@ -62,7 +62,7 @@ export default function UploadPage() {
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 rounded-md border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger">
+        <div role="alert" className="mt-4 rounded-lg border-l-4 border-danger bg-danger/5 px-4 py-3 text-sm text-danger">
           {error}
         </div>
       )}
@@ -73,7 +73,7 @@ export default function UploadPage() {
             type="button"
             onClick={handleUpload}
             disabled={state.step === 'uploading'}
-            className="rounded-md bg-ink px-5 py-2.5 font-medium text-white hover:bg-ink-soft disabled:opacity-60 disabled:cursor-wait"
+            className="btn btn-primary"
           >
             {state.step === 'uploading' ? 'Nahrávam…' : state.step === 'failed' ? 'Skúsiť znova' : 'Spracovať doklad'}
           </button>
@@ -81,13 +81,29 @@ export default function UploadPage() {
             <button
               type="button"
               onClick={() => setState({ step: 'empty' })}
-              className="rounded-md px-5 py-2.5 font-medium text-ink hover:bg-ink/5"
+              className="btn btn-ghost"
             >
               Vybrať iný súbor
             </button>
           )}
         </div>
       )}
+
+      <ol className="mt-10 grid gap-4 sm:grid-cols-3" aria-label="Ako to funguje">
+        {[
+          ['Nahrajte doklad', 'PDF, sken alebo fotku z mobilu.'],
+          ['AI vyplní údaje', 'Každú hodnotu doloží citátom z dokladu.'],
+          ['Skontrolujte a potvrďte', 'Bez vášho potvrdenia sa nič nezapíše.'],
+        ].map(([title, text], i) => (
+          <li key={title} className="flex gap-3">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-tint text-sm font-bold text-primary">{i + 1}</span>
+            <span>
+              <span className="block font-semibold text-ink">{title}</span>
+              <span className="block text-sm text-muted">{text}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }
@@ -95,17 +111,17 @@ export default function UploadPage() {
 function SelectedFile({ file, progress, onRemove }: { file: File; progress: number | null; onRemove: () => void }) {
   const kind = kindOf(file)
   return (
-    <div className="rounded-lg border border-line bg-surface p-4 sm:p-5">
+    <div className="card p-4 sm:p-5">
       <div className="flex items-center gap-4">
-        <span className="flex h-12 w-10 shrink-0 items-center justify-center rounded border-2 border-ink text-[11px] font-bold text-ink">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-tint text-[11px] font-bold text-primary">
           {kind?.label ?? '?'}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium" title={file.name}>{file.name}</p>
+          <p className="truncate font-semibold text-ink" title={file.name}>{file.name}</p>
           <p className="text-sm text-muted">{formatFileSize(file.size)}</p>
         </div>
         {progress === null && (
-          <button type="button" onClick={onRemove} className="text-sm font-medium text-muted hover:text-danger px-2 py-1 rounded">
+          <button type="button" onClick={onRemove} className="btn btn-ghost btn-sm">
             Odstrániť
           </button>
         )}
@@ -119,7 +135,7 @@ function SelectedFile({ file, progress, onRemove }: { file: File; progress: numb
           aria-valuemax={100}
           aria-label="Priebeh nahrávania"
         >
-          <div className="h-full bg-mark transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          <div className="h-full rounded-full bg-primary transition-[width] duration-150" style={{ width: `${progress}%` }} />
         </div>
       )}
     </div>

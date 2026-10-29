@@ -36,8 +36,8 @@ export default function Dropzone({ onFiles, disabled }: Props) {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={[
-        'relative rounded-lg border-2 border-dashed transition-colors',
-        dragging ? 'border-mark bg-mark/10' : 'border-line bg-surface hover:border-ink-soft',
+        'relative rounded-xl border-2 border-dashed transition-colors shadow-card',
+        dragging ? 'border-primary bg-primary-tint' : 'border-field bg-surface hover:border-primary',
         disabled ? 'opacity-60 pointer-events-none' : '',
       ].join(' ')}
     >
@@ -45,7 +45,7 @@ export default function Dropzone({ onFiles, disabled }: Props) {
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled}
-        className="w-full flex flex-col items-center gap-4 px-6 py-12 sm:py-16 text-center rounded-lg cursor-pointer"
+        className="w-full flex flex-col items-center gap-4 px-6 py-12 sm:py-16 text-center rounded-xl cursor-pointer"
       >
         <DocumentIcon active={dragging} />
         <span className="text-lg font-semibold text-ink">
@@ -54,7 +54,7 @@ export default function Dropzone({ onFiles, disabled }: Props) {
         <span className="text-sm text-muted">
           {ACCEPTED_LABEL}, najviac {formatFileSize(MAX_FILE_SIZE)}. Na mobile môžete doklad rovno odfotiť.
         </span>
-        <span className="mt-2 inline-flex items-center rounded-md bg-ink px-4 py-2 text-sm font-medium text-white">
+        <span className="btn btn-primary mt-2">
           Vybrať súbor
         </span>
       </button>
@@ -76,13 +76,13 @@ export default function Dropzone({ onFiles, disabled }: Props) {
 
 function DocumentIcon({ active }: { active: boolean }) {
   return (
-    <svg width="56" height="68" viewBox="0 0 56 68" aria-hidden className="shrink-0">
-      <path d="M4 2h34l14 14v48a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff" stroke="#1d3a5f" strokeWidth="2.5" />
-      <path d="M38 2v14h14" fill="none" stroke="#1d3a5f" strokeWidth="2.5" />
-      <rect x="11" y="24" width="24" height="3" rx="1.5" fill="#1d3a5f" />
-      <rect x="11" y="33" width="32" height="3" rx="1.5" fill="#b7c2cf" />
-      <rect x="11" y="41" width="28" height="3" rx="1.5" fill="#b7c2cf" />
-      <rect x="9" y="50" width="36" height="7" rx="2" fill={active ? '#e8b84a' : '#e8b84a99'} />
+    <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden className="shrink-0">
+      <circle cx="32" cy="32" r="32" fill={active ? '#2870ed' : '#eaf1fd'} />
+      <path d="M22 15h14l8 8v25a1.5 1.5 0 0 1-1.5 1.5h-20.5A1.5 1.5 0 0 1 20.5 48V16.5A1.5 1.5 0 0 1 22 15z" fill="#fff" stroke={active ? '#fff' : '#2870ed'} strokeWidth="2" />
+      <path d="M36 15v8h8" fill="none" stroke={active ? '#fff' : '#2870ed'} strokeWidth="2" />
+      <rect x="26" y="29" width="12" height="2.5" rx="1.25" fill="#2870ed" />
+      <rect x="26" y="35" width="9" height="2.5" rx="1.25" fill="#a3b5c9" />
+      <rect x="26" y="41" width="12" height="2.5" rx="1.25" fill="#a3b5c9" />
     </svg>
   )
 }

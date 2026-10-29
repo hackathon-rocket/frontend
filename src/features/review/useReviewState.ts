@@ -25,18 +25,28 @@ export interface TableEntry {
   rows: RowEntry[]
 }
 
+/** Tabuľka s jediným riadkom a mnohými stĺpcami (napr. BBSK „Zoznam účtovných dokladov“)
+ *  sa zobrazí ako formulár: jeden doklad = jeden riadok tabuľky vo formulári eGrant. */
+export function isRowForm(t: ExtractedTable): boolean {
+  return t.rows.length === 1 && t.columns.length > 4
+}
+
 let rowCounter = 0
 const newRowId = () => `row-${++rowCounter}`
 
+/** Pri sumách berieme presnú textovú hodnotu (decimal_value), nie desatinné číslo. */
+const sourceValue = (field: ExtractedField) =>
+  field.type === 'currency' && field.decimal_value != null && field.decimal_value !== '' ? Number(field.decimal_value) : field.value
+
 function entryFrom(field: ExtractedField): FieldEntry {
-  const text = toInput(field.type, field.value)
-  return { field, text, state: initialState(field.value, field.confidence), error: validate(field.type, text) }
+  const text = toInput(field.type, sourceValue(field))
+  return { field, text, state: initialState(field.value, field.confidence, field.status), error: validate(field.type, text) }
 }
 
 /** Nová hodnota v inpute → nový stav. Ak sa používateľ vráti k pôvodnej hodnote, vrátime pôvodný stav. */
 function withText(entry: FieldEntry, text: string): FieldEntry {
-  const original = toInput(entry.field.type, entry.field.value)
-  const state = text === original ? initialState(entry.field.value, entry.field.confidence) : 'edited'
+  const original = toInput(entry.field.type, sourceValue(entry.field))
+  const state = text === original ? initialState(entry.field.value, entry.field.confidence, entry.field.status) : 'edited'
   return { ...entry, text, state, error: validate(entry.field.type, text) }
 }
 
@@ -114,10 +124,12 @@ export function useReviewState(result: ExtractionResult) {
   const summary = useMemo(() => {
     const cells = tables.flatMap((t) => t.rows.flatMap((r) => Object.values(r.cells)))
     const all = [...fields, ...cells]
+    // „Polia“ = samostatné polia + bunky riadku zobrazeného ako formulár.
+    const formEntries = [...fields, ...tables.filter((t) => isRowForm(t.table)).flatMap((t) => t.rows.flatMap((r) => Object.values(r.cells)))]
     return {
-      fieldCount: fields.length,
-      found: fields.filter((f) => f.state !== 'missing').length,
-      missing: fields.filter((f) => f.state === 'missing').length,
+      fieldCount: formEntries.length,
+      found: formEntries.filter((f) => f.state !== 'missing').length,
+      missing: formEntries.filter((f) => f.state === 'missing').length,
       toReview: all.filter((e) => e.state === 'review').length,
       invalid: all.filter((e) => e.error).length,
     }

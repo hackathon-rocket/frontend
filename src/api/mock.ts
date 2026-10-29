@@ -1,63 +1,114 @@
 /*
-  Falošný backend pre vývoj bez servera. Tvar dát = types.ts.
-  Simuluje nahrávanie, postupné spracovanie (OCR → extrakcia → kontrola) a typickú faktúru.
-  Tip na demo: súbor, ktorého názov obsahuje „chyba“, skončí chybou spracovania.
+  Falošný backend pre vývoj a demo bez servera.
+  Vracia PRESNE tvar Laravel DocumentResource ({ data: { document, ocr, extracted, validation } })
+  a ide cez ten istý adaptér ako skutočný backend — demo sa správa ako ostrá prevádzka.
+
+  - Ukážkový doklad „na kontrolu“ = oficiálna ukážka AI orchestrátora (BBSK formulár 11824,
+    riadok tabuľky rozpocet.zoznamuctovnychdokladov namapovaný na tagy).
+  - Nové nahratia = stav ako dnes v backende: orchestrátor bez formulára (mapping_status no_form),
+    frontend zobrazí univerzálne údaje.
+  - Súbor s „chyba“ v názve skončí chybou rozpoznávania.
 */
-import type {
-  ConfirmPayload,
-  DocumentStatus,
-  DocumentSummary,
-  ExtractionResult,
-  ProcessingStage,
-} from './types'
+import sample from './fixtures/orchestrator-sample.json'
+import type { ConfirmPayload, DocumentSummary } from './types'
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const STORAGE_KEY = 'egrant-extrakcia:mock-v2'
+const DAY = 24 * 60 * 60 * 1000
 
-interface MockDoc extends DocumentSummary {
+interface MockDoc {
+  id: string
+  filename: string
+  mime_type: string
+  file_size: number
+  created_at: string
   uploadedAt: number
+  mapped: boolean
   confirmed?: ConfirmPayload
 }
-const docs = new Map<string, MockDoc>()
 
-/** Časová os spracovania v ms od nahratia. */
-const TIMELINE: { until: number; status: DocumentStatus; stage: ProcessingStage | null }[] = [
-  { until: 1200, status: 'processing', stage: 'ocr' },
-  { until: 2800, status: 'processing', stage: 'extraction' },
-  { until: 3800, status: 'processing', stage: 'validation' },
-]
+function seed(): MockDoc[] {
+  const at = (msAgo: number) => new Date(Date.now() - msAgo).toISOString()
+  return [
+    { id: 'demo-potvrdena', filename: 'faktura_2026-0098.pdf', mime_type: 'application/pdf', file_size: 212_480, created_at: at(2 * DAY), uploadedAt: 0, mapped: true, confirmed: { values: {}, tables: {} } },
+    { id: 'demo-chyba', filename: 'sken_chyba_0412.jpg', mime_type: 'image/jpeg', file_size: 1_843_200, created_at: at(DAY + 3 * 3600_000), uploadedAt: 0, mapped: false },
+    { id: 'demo-kontrola', filename: 'faktura_FA-2026-001.pdf', mime_type: 'application/pdf', file_size: 184_320, created_at: at(40 * 60_000), uploadedAt: 0, mapped: true },
+  ]
+}
 
-function currentState(doc: MockDoc): Pick<DocumentSummary, 'status' | 'processing_stage' | 'error_message'> {
-  if (doc.confirmed) return { status: 'confirmed', processing_stage: null, error_message: null }
+function load(): Map<string, MockDoc> {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (raw) return new Map((JSON.parse(raw) as MockDoc[]).map((d) => [d.id, d]))
+  } catch { /* úložisko nedostupné */ }
+  return new Map(seed().map((d) => [d.id, d]))
+}
+
+const docs = load()
+
+function save() {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...docs.values()]))
+  } catch { /* mock pobeží len v pamäti */ }
+}
+
+/** Interný stav tak, ako ho backend ukladá (ProcessDocumentOcr → ProcessDocumentExtraction). */
+function internalStatus(doc: MockDoc): string {
+  if (doc.confirmed) return 'confirmed'
   const elapsed = Date.now() - doc.uploadedAt
-  if (doc.original_filename.toLowerCase().includes('chyba') && elapsed > 2000) {
-    return {
-      status: 'failed',
-      processing_stage: null,
-      error_message: 'Text dokladu sa nepodarilo rozpoznať. Sken je príliš rozmazaný alebo tmavý.',
-    }
+  if (doc.filename.toLowerCase().includes('chyba') && elapsed > 2000) return 'ocr_failed'
+  if (elapsed < 400) return 'uploaded'
+  if (elapsed < 1800) return 'processing'
+  if (elapsed < 3800) return 'extracting'
+  return 'completed'
+}
+
+/** Rovnaký preklad stavov ako DocumentResource::publicStatus v backende. */
+function publicStatus(internal: string): [string, string | null] {
+  switch (internal) {
+    case 'processing': return ['processing', 'ocr']
+    case 'ocr_completed':
+    case 'extracting': return ['processing', 'extraction']
+    case 'completed': return ['extracted', null]
+    case 'ocr_failed':
+    case 'failed': return ['failed', null]
+    default: return [internal, null]
   }
-  const step = TIMELINE.find((t) => elapsed < t.until)
-  return step
-    ? { status: step.status, processing_stage: step.stage, error_message: null }
-    : { status: 'extracted', processing_stage: null, error_message: null }
 }
 
-function summary(doc: MockDoc): DocumentSummary {
-  const { uploadedAt: _u, confirmed: _c, ...rest } = doc
-  return { ...rest, ...currentState(doc) }
-}
-
-/** Dokument, ktorý mock nepozná (napr. po obnovení stránky) — tvárime sa, že je hotový. */
-function fallbackDoc(id: string): MockDoc {
+function resource(doc: MockDoc) {
+  const internal = internalStatus(doc)
+  const [status, stage] = publicStatus(internal)
+  const done = status === 'extracted' || status === 'confirmed'
   return {
-    id,
-    original_filename: 'faktura_2026-0142.pdf',
-    mime_type: 'application/pdf',
-    file_size: 184_320,
-    document_type: 'faktúra',
-    status: 'extracted',
-    created_at: new Date().toISOString(),
-    uploadedAt: 0,
+    data: {
+      document: {
+        id: doc.id,
+        filename: doc.filename,
+        mime_type: doc.mime_type,
+        file_size: doc.file_size,
+        created_at: doc.created_at,
+        status,
+        stage,
+        error_message: internal === 'ocr_failed' ? 'OCR service returned HTTP 422: image too blurry' : null,
+      },
+      ocr: done ? { text: SAMPLE_OCR_TEXT, source: 'ocr-api', language: 'slk+eng' } : undefined,
+      extracted: done
+        ? {
+            document_type: sample.document_type,
+            fields: doc.mapped ? sample.fields : [],
+            tables: doc.mapped ? sample.tables : [],
+            extracted_data: sample.extracted_data,
+          }
+        : null,
+      validation: done
+        ? {
+            status: 'needs_review',
+            mapping_status: doc.mapped ? sample.mapping_status : 'no_form',
+            warnings: doc.mapped ? sample.warnings : ['Formulár nebol zadaný — zobrazujú sa univerzálne údaje bez mapovania na tagy.', ...sample.warnings.slice(1, 2)],
+          }
+        : null,
+    },
   }
 }
 
@@ -69,72 +120,60 @@ export async function uploadDocument(file: File, onProgress?: (p: number) => voi
   const id = `mock-${Date.now().toString(36)}`
   docs.set(id, {
     id,
-    original_filename: file.name,
+    filename: file.name,
     mime_type: file.type,
     file_size: file.size,
-    document_type: 'faktúra',
-    status: 'uploaded',
     created_at: new Date().toISOString(),
     uploadedAt: Date.now(),
+    mapped: false,
   })
+  save()
   return { id, status: 'uploaded' as const, message: 'Document uploaded successfully' }
 }
 
-export async function listDocuments(): Promise<DocumentSummary[]> {
+export async function getDocument(id: string): Promise<unknown> {
+  await wait(250)
+  const doc = docs.get(id) ?? { ...seed()[2], id }
+  return resource(doc)
+}
+
+export async function listDocuments(): Promise<unknown[]> {
   await wait(300)
-  return [...docs.values()].reverse().map(summary)
+  return [...docs.values()].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(resource)
 }
 
 export async function confirmDocument(id: string, payload: ConfirmPayload): Promise<DocumentSummary> {
   await wait(500)
-  const doc = docs.get(id) ?? fallbackDoc(id)
+  const doc = docs.get(id) ?? { ...seed()[2], id }
   doc.confirmed = payload
   docs.set(id, doc)
-  return summary(doc)
-}
-
-export async function getDocument(id: string): Promise<ExtractionResult> {
-  await wait(250)
-  const doc = summary(docs.get(id) ?? fallbackDoc(id))
-  if (doc.status !== 'extracted' && doc.status !== 'confirmed') {
-    return { document: doc, fields: [], tables: [], warnings: [] }
+  save()
+  return {
+    id: doc.id,
+    original_filename: doc.filename,
+    mime_type: doc.mime_type,
+    file_size: doc.file_size,
+    document_type: 'faktúra',
+    status: 'confirmed',
+    created_at: doc.created_at,
   }
-  return { document: doc, ...SAMPLE_INVOICE }
 }
 
-const SAMPLE_INVOICE: Omit<ExtractionResult, 'document'> = {
-  fields: [
-    { tag: 'cislo_faktury', label: 'Číslo faktúry', type: 'string', value: '2026-0142', confidence: 0.98, evidence: 'Faktúra č. 2026-0142', page: 1 },
-    { tag: 'dodavatel.nazov', label: 'Dodávateľ', type: 'string', value: 'Kancelária Plus s.r.o.', confidence: 0.95, evidence: 'Dodávateľ: Kancelária Plus s.r.o.', page: 1 },
-    { tag: 'dodavatel.ico', label: 'IČO dodávateľa', type: 'ico', value: '36421928', confidence: 0.93, evidence: 'IČO: 36 421 928', page: 1 },
-    { tag: 'dodavatel.dic', label: 'DIČ dodávateľa', type: 'dic', value: '2020183654', confidence: 0.62, evidence: 'DIČ: 202018365?', page: 1 },
-    { tag: 'datum_vystavenia', label: 'Dátum vystavenia', type: 'date', value: '2026-09-14', confidence: 0.97, evidence: 'Dátum vystavenia: 14. 9. 2026', page: 1 },
-    { tag: 'datum_splatnosti', label: 'Dátum splatnosti', type: 'date', value: null, confidence: 0, evidence: null, page: null },
-    { tag: 'suma_bez_dph', label: 'Suma bez DPH', type: 'currency', value: 410.0, confidence: 0.9, evidence: 'Spolu bez DPH 410,00 €', page: 1 },
-    { tag: 'suma_s_dph', label: 'Suma s DPH', type: 'currency', value: 492.0, confidence: 0.96, evidence: 'Celkom k úhrade 492,00 €', page: 1 },
-  ],
-  tables: [
-    {
-      tag: 'polozky',
-      label: 'Položky faktúry',
-      columns: [
-        { tag: 'polozka', label: 'Názov položky', type: 'string' },
-        { tag: 'mnozstvo', label: 'Množstvo', type: 'number' },
-        { tag: 'suma', label: 'Suma bez DPH', type: 'currency' },
-      ],
-      rows: [
-        {
-          polozka: { tag: 'polozka', label: 'Názov položky', type: 'string', value: 'Papier A4, 80 g, 500 listov', confidence: 0.94, evidence: 'Papier A4 80g 500 l.' },
-          mnozstvo: { tag: 'mnozstvo', label: 'Množstvo', type: 'number', value: 20, confidence: 0.92, evidence: '20 ks' },
-          suma: { tag: 'suma', label: 'Suma bez DPH', type: 'currency', value: 90.0, confidence: 0.91, evidence: '90,00' },
-        },
-        {
-          polozka: { tag: 'polozka', label: 'Názov položky', type: 'string', value: 'Toner HP 59A', confidence: 0.88, evidence: 'Toner HP 59A' },
-          mnozstvo: { tag: 'mnozstvo', label: 'Množstvo', type: 'number', value: 2, confidence: 0.9, evidence: '2 ks' },
-          suma: { tag: 'suma', label: 'Suma bez DPH', type: 'currency', value: 320.0, confidence: 0.58, evidence: '32O,00' },
-        },
-      ],
-    },
-  ],
-  warnings: [],
-}
+/* OCR text zo syntetickej faktúry orchestrátora (tests/fixtures/clean_invoice.json). */
+const SAMPLE_OCR_TEXT = `FAKTÚRA č. FA-2026-001
+Dodávateľ: Ukážkový dodávateľ s.r.o.
+IČO dodávateľa: 12 345 679
+DIČ dodávateľa: 2021234567
+IČ DPH dodávateľa: SK2021234567
+Odberateľ: Ukážkové združenie
+Dátum vystavenia: 01.10.2026
+Dátum splatnosti: 15.10.2026
+Dátum dodania: 30.09.2026
+Predmet fakturácie: Tlač informačných materiálov
+Spôsob úhrady: prevodom
+Základ DPH: 1 000,00 EUR
+DPH spolu: 230,00 EUR
+Suma spolu: 1 230,00 EUR
+Mena: EUR
+Položka: Letáky | Množstvo: 100 | Jednotka: ks | Jednotková cena: 4,00 | Bez DPH: 400,00 | DPH: 92,00 | S DPH: 492,00
+Položka: Plagáty | Množstvo: 100 | Jednotka: ks | Jednotková cena: 6,00 | Bez DPH: 600,00 | DPH: 138,00 | S DPH: 738,00`
