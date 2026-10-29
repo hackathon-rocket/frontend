@@ -10,7 +10,7 @@
   - Súbor s „chyba“ v názve skončí chybou rozpoznávania.
 */
 import sample from './fixtures/orchestrator-sample.json'
-import type { ConfirmPayload, DocumentSummary } from './types'
+import type { ConfirmPayload } from './types'
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const STORAGE_KEY = 'egrant-extrakcia:mock-v2'
@@ -101,6 +101,7 @@ function resource(doc: MockDoc) {
             extracted_data: sample.extracted_data,
           }
         : null,
+      confirmed: doc.confirmed ? { ...doc.confirmed, confirmed_at: new Date().toISOString() } : null,
       validation: done
         ? {
             status: 'needs_review',
@@ -142,21 +143,13 @@ export async function listDocuments(): Promise<unknown[]> {
   return [...docs.values()].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(resource)
 }
 
-export async function confirmDocument(id: string, payload: ConfirmPayload): Promise<DocumentSummary> {
+export async function confirmDocument(id: string, payload: ConfirmPayload): Promise<unknown> {
   await wait(500)
   const doc = docs.get(id) ?? { ...seed()[2], id }
   doc.confirmed = payload
   docs.set(id, doc)
   save()
-  return {
-    id: doc.id,
-    original_filename: doc.filename,
-    mime_type: doc.mime_type,
-    file_size: doc.file_size,
-    document_type: 'faktúra',
-    status: 'confirmed',
-    created_at: doc.created_at,
-  }
+  return resource(doc)
 }
 
 /* OCR text zo syntetickej faktúry orchestrátora (tests/fixtures/clean_invoice.json). */

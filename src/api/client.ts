@@ -99,12 +99,16 @@ export async function listDocuments(): Promise<DocumentSummary[]> {
 
 /** Odoslanie skontrolovaných a potvrdených údajov — POST /api/documents/{id}/confirm (návrh). */
 export async function confirmDocument(id: string, payload: ConfirmPayload): Promise<DocumentSummary> {
-  if (USE_MOCK) return mock.confirmDocument(id, payload)
+  if (USE_MOCK) return toSummary(await mock.confirmDocument(id, payload))
   try {
-    return await requestJson(`/documents/${id}/confirm`, { method: 'POST', body: JSON.stringify(payload) })
+    // Backend vráti aktualizovaný DocumentResource so stavom confirmed.
+    return toSummary(await requestJson(`/documents/${encodeURIComponent(id)}/confirm`, { method: 'POST', body: JSON.stringify(payload) }))
   } catch (e) {
-    if (e instanceof ApiError && (e.status === 404 || e.status === 405)) {
-      throw new ApiError('Server zatiaľ nevie uložiť potvrdené údaje. Stiahnite si ich cez Excel alebo JSON hore na stránke.', e.status)
+    if (e instanceof ApiError && e.status === 404) {
+      throw new ApiError('Doklad sa na serveri nenašiel. Údaje si môžete stiahnuť cez Excel alebo JSON hore na stránke.', e.status)
+    }
+    if (e instanceof ApiError && e.status === 422 && /confirmable/i.test(e.message)) {
+      throw new ApiError('Doklad sa ešte spracováva, preto ho zatiaľ nemožno potvrdiť. Skúste to o chvíľu.', e.status)
     }
     throw e
   }

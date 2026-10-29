@@ -69,8 +69,8 @@ src/
 |---|---|---|
 | `POST /api/documents` | hotové (PDF, JPG, PNG, TIFF, WEBP, BMP; do 20 MB) | nahratie dokladu |
 | `GET /api/documents/{id}?include=ocr` | hotové (`DocumentResource`: document + extracted + validation) | priebeh, výsledok AI, rozpoznaný text — prevod v `src/api/adapter.ts` |
-| `GET /api/documents` | chýba | zoznam sa skladá z histórie nahratí v prehliadači |
-| `POST /api/documents/{id}/confirm` | chýba | používateľ si údaje stiahne cez Excel/JSON |
+| `GET /api/documents` | hotové (stránkovanie po 50) | zoznam dokladov (záložne z histórie v prehliadači) |
+| `POST /api/documents/{id}/confirm` | hotové (`{ values, tables }` → `confirmed`) | potvrdenie; po obnovení stránky sa zobrazia potvrdené hodnoty |
 
 Ako frontend číta výsledok AI orchestrátora:
 

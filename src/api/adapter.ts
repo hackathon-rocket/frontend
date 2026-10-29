@@ -10,7 +10,7 @@
   Pole fields/tables pochádzajú priamo z AI orchestrátora (ExtractedField so stavom verified / needs_review / not_found).
 */
 import { INVOICE_FIELDS, INVOICE_TABLE } from './invoiceTemplate'
-import type { DocumentStatus, DocumentSummary, ExtractedField, ExtractedTable, ExtractionResult, ProcessingStage } from './types'
+import type { ConfirmPayload, DocumentStatus, DocumentSummary, ExtractedField, ExtractedTable, ExtractionResult, ProcessingStage } from './types'
 import { DOCUMENT_TYPE_LABEL, fieldsFromUniversal, tablesFromUniversal, type UniversalData } from './universal'
 
 interface ResourceDocument {
@@ -35,6 +35,7 @@ interface DocumentResource {
     extracted_data?: UniversalData | null
   } | null
   validation?: { warnings?: string[]; mapping_status?: string | null } | null
+  confirmed?: { values?: ConfirmPayload['values']; tables?: ConfirmPayload['tables']; confirmed_at?: string } | null
 }
 
 /** Starší tvar (surový Document s reláciou extractions) — ponechané pre spätnú kompatibilitu. */
@@ -127,7 +128,8 @@ export function toExtractionResult(raw: unknown): ExtractionResult {
     warnings.unshift('AI z dokladu nevrátila žiadne údaje. Polia doplňte podľa dokladu.')
   }
 
-  return { document, fields, tables, warnings: dedupe(warnings), ocr_text: r.ocr?.text ?? null }
+  const confirmed = r.confirmed ? { values: r.confirmed.values ?? {}, tables: r.confirmed.tables ?? {} } : null
+  return { document, fields, tables, warnings: dedupe(warnings), ocr_text: r.ocr?.text ?? null, confirmed }
 }
 
 function fromLegacy(raw: LegacyDocument): ExtractionResult {

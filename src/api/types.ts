@@ -79,6 +79,8 @@ export interface ExtractionResult {
   warnings: string[]
   /** Text rozpoznaný OCR (backend: extractions[].text). */
   ocr_text?: string | null
+  /** Hodnoty, ktoré používateľ potvrdil (backend: confirmed) — majú prednosť pred návrhom AI. */
+  confirmed?: ConfirmPayload | null
 }
 
 /** Hodnota pripravená na zápis do formulára eGrant: tag → hodnota. */

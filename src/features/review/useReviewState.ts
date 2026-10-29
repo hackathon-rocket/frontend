@@ -3,7 +3,7 @@
   Hodnoty držíme ako text z inputov; na číslo/dátum ich prevádzame až pri odoslaní (buildPayload).
 */
 import { useCallback, useMemo, useState } from 'react'
-import type { ConfirmPayload, ExtractedField, ExtractedTable, ExtractionResult } from '../../api/types'
+import type { ConfirmPayload, ExtractedField, ExtractedTable, ExtractionResult, FieldValue } from '../../api/types'
 import { initialState, type FieldState } from '../../lib/confidence'
 import { fromInput, toInput } from '../../lib/format'
 import { validate } from '../../lib/validators'
@@ -43,6 +43,14 @@ function entryFrom(field: ExtractedField): FieldEntry {
   return { field, text, state: initialState(field.value, field.confidence, field.status), error: validate(field.type, text) }
 }
 
+/** Potvrdená hodnota (po obnovení stránky) → text v inpute; ak sa líši od návrhu AI, pole je „upravené“. */
+function withConfirmed(entry: FieldEntry, value: FieldValue | undefined): FieldEntry {
+  if (value === undefined) return entry
+  const next = withText(entry, toInput(entry.field.type, value))
+  // Hodnotu na kontrolu, ktorú používateľ potvrdil bez zmeny, už považujeme za skontrolovanú.
+  return next.state === 'review' ? { ...next, state: 'checked' } : next
+}
+
 /** Nová hodnota v inpute → nový stav. Ak sa používateľ vráti k pôvodnej hodnote, vrátime pôvodný stav. */
 function withText(entry: FieldEntry, text: string): FieldEntry {
   const original = toInput(entry.field.type, sourceValue(entry.field))
@@ -51,20 +59,29 @@ function withText(entry: FieldEntry, text: string): FieldEntry {
 }
 
 export function useReviewState(result: ExtractionResult) {
-  const [fields, setFields] = useState<FieldEntry[]>(() => result.fields.map(entryFrom))
+  const confirmed = result.confirmed ?? null
+  const [fields, setFields] = useState<FieldEntry[]>(() =>
+    result.fields.map((f) => withConfirmed(entryFrom(f), confirmed?.values[f.tag])),
+  )
   const [tables, setTables] = useState<TableEntry[]>(() =>
-    result.tables.map((table) => ({
-      table,
-      rows: table.rows.map((row) => ({
-        id: newRowId(),
-        cells: Object.fromEntries(
-          table.columns.map((c) => [
-            c.tag,
-            entryFrom(row[c.tag] ?? { tag: c.tag, label: c.label, type: c.type, value: null, confidence: 0 }),
-          ]),
-        ),
-      })),
-    })),
+    result.tables.map((table) => {
+      const empty = (c: { tag: string; label: string; type: ExtractedField['type'] }): ExtractedField => ({ tag: c.tag, label: c.label, type: c.type, value: null, confidence: 0 })
+      // Po potvrdení zobrazíme presne potvrdené riadky (používateľ ich mohol pridať, zmazať alebo upraviť).
+      const confirmedRows = confirmed?.tables[table.tag]
+      const sourceRows = confirmedRows ?? table.rows
+      return {
+        table,
+        rows: sourceRows.map((_, i) => ({
+          id: newRowId(),
+          cells: Object.fromEntries(
+            table.columns.map((c) => {
+              const base = entryFrom(table.rows[i]?.[c.tag] ?? empty(c))
+              return [c.tag, confirmedRows ? withConfirmed(base, confirmedRows[i]?.[c.tag] ?? null) : base]
+            }),
+          ),
+        })),
+      }
+    }),
   )
 
   const setFieldText = useCallback((tag: string, text: string) => {
